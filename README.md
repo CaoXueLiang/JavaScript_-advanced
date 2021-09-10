@@ -1,2 +1,2 @@
-# JavaScript_-advanced
+# JavaScript_advanced
 深入JavaScript高级语法—(腾讯课堂学习笔记)

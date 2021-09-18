@@ -1,5 +1,5 @@
 var obj = {
-  name: "why",
+  name: "obj",
   running: function () {
     console.log(this.name + " running");
   },
@@ -10,3 +10,16 @@ var obj = {
     console.log(this.name + " studying");
   },
 };
+
+obj.running();
+obj.eating();
+obj.studying();
+
+var tmpObj = {
+  name: "tmpObj",
+  running: function () {
+    console.log(tmpObj.name + " runding");
+  },
+};
+
+tmpObj.running();

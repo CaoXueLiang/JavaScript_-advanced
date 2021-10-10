@@ -1,4 +1,4 @@
-var myName = "caoxuelaing";
+var myName = "xiaoming";
 
 console.log(num1);
 

@@ -20,9 +20,10 @@ const p3 = new Promise((resolve, reject) => {
 /**
  * Promise.all 只要有一个状态变为rejected，就会走catch方法
  * 当数组中所有的promise的状态都是fulfilled时，才会走成功回调,并且以数组的形式返回结果
+ * ⚠️ [ 33333, 11111, 22222 ] 注意返回的结果是数组中传入的promise的顺序
  */
 
-Promise.all([p1, p2, p3])
+Promise.all([p3, p1, p2])
   .then((res) => {
     console.log("res: ", res);
   })
@@ -34,7 +35,8 @@ Promise.all([p1, p2, p3])
  * Promise.allSettled
  * 不管数组中的promise的状态是fulfilled还是rejected，都会等待所有promise执行完毕，将执行结果以数组的方式返回，包含status和value
  * Promsie.allSettled没有catch回调
+ * ⚠️ 注意返回结果的顺序
  */
-Promise.allSettled([p1, p2, p3]).then((res) => {
+Promise.allSettled([p3, p1, p2]).then((res) => {
   console.log("res: ", res);
 });

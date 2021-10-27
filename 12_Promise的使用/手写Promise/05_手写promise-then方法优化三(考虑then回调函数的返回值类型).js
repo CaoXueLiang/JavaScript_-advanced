@@ -5,8 +5,14 @@ const PROMISE_STATUS_REJECTED = "rejected";
 /** 工具类函数，捕获异常 */
 function execFunctionWithCatchError(exefn, value, resolve, reject) {
   try {
+    //考虑返回值的类型
     const result = exefn(value);
-    resolve(result);
+    //考虑then回调函数的返回值
+    if (result instanceof CXLPromise) {
+      result.then(resolve, reject);
+    } else {
+      resolve(result);
+    }
   } catch (error) {
     reject(error);
   }
@@ -58,109 +64,56 @@ class CXLPromise {
   }
 
   then(onfulfilled, onrejected) {
-    // console.log("------status-----", this.status);
     return new CXLPromise((resolve, reject) => {
       //再次调用then方法时，需要考虑此时的promise状态
       if (this.status === PROMISE_STATUS_PENDING) {
         this.onfulfilledFns.push(() => {
-          //   try {
-          //     const value = onfulfilled(this.value);
-          //     resolve(value);
-          //   } catch (err) {
-          //     reject(err);
-          //   }
           execFunctionWithCatchError(onfulfilled, this.value, resolve, reject);
         });
         this.onrejectedFns.push(() => {
-          //   try {
-          //     const reason = onrejected(this.reason);
-          //     resolve(reason);
-          //   } catch (err) {
-          //     reject(err);
-          //   }
           execFunctionWithCatchError(onrejected, this.reason, resolve, reject);
         });
       }
       if (this.status === PROMISE_STATUS_FULFILLED && onfulfilled) {
-        const result = onfulfilled(this.value);
-        // try {
-        //   const result = onfulfilled(this.value);
-        //   resolve(result);
-        // } catch (error) {
-        //   reject(error);
-        // }
         execFunctionWithCatchError(onfulfilled, this.value, resolve, reject);
       }
       if (this.status === PROMISE_STATUS_REJECTED && onrejected) {
-        // try {
-        //   const result = onrejected(this.reason);
-        //   resolve(result);
-        // } catch (error) {
-        //   reject(error);
-        // }
         execFunctionWithCatchError(onrejected, this.reason, resolve, reject);
       }
     });
   }
 }
 
+/**
+ * 考虑then函数回调函数返回值的类型：
+ * 1、普通值
+ * 2、promise对象
+ * 3、实现then方法的对象
+ */
+
+const newPromise = new CXLPromise((resolve, reject) => {
+  resolve("我是新的promise的返回值");
+});
+
 const promise1 = new CXLPromise((resolve, reject) => {
   // resolve("sucess message");
   reject("error message");
-  //   throw new Error("errorsMessage"); //直接抛出异常不能捕获到，需要使用try，catch
+  // throw new Error("errorsMessage"); //直接抛出异常不能捕获到，需要使用try，catch
 });
 
-// 调用then方法多次调用
-promise1.then(
-  (res) => {
-    console.log("res1:", res);
-  },
-  (err) => {
-    console.log("err1:", err);
-  }
-);
-
-promise1.then(
-  (res) => {
-    console.log("res2:", res);
-  },
-  (err) => {
-    console.log("err2:", err);
-  }
-);
-
-// 在确定Promise状态之后, 再次调用then
-setTimeout(() => {
-  promise1
-    .then(
-      (res) => {
-        console.log("res3:", res);
-      },
-      (err) => {
-        console.log("err3:", err);
-      }
-    )
-    .then(
-      (res) => {
-        console.log("new res", res);
-      },
-      (err) => {
-        console.log("new error---:", err);
-      }
-    );
-}, 2000);
-
-// 调用then方法多次调用
+//调用then方法多次调用
 promise1
   .then(
     (res) => {
       console.log("res4:", res);
       // return "aaaa";
-      throw new Error("err message");
+      // return newPromise;
+      // throw new Error("err message");
     },
     (err) => {
       console.log("err4:", err);
-      return "bbbbb";
+      // return "bbbbb";
+      return newPromise;
       // throw new Error("err message")
     }
   )

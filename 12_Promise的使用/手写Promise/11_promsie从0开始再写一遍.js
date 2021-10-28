@@ -47,7 +47,12 @@ class CXLPromise {
     const normalRejected = (err) => {
       throw err;
     };
+    const normalFulfilled = (value) => {
+      return value;
+    };
     onrejected = onrejected || normalRejected;
+    onfulfilled = onfulfilled || normalFulfilled;
+
     return new CXLPromise((resolve, reject) => {
       if (this.status === PROMISE_STATUS_PENDING) {
         this.onFulfilledFns.push(() => {
@@ -92,14 +97,7 @@ class CXLPromise {
   }
 
   finally(onfinally) {
-    this.then(
-      () => {
-        onfinally();
-      },
-      () => {
-        onfinally();
-      }
-    );
+    this.then(onfinally, onfinally);
   }
 
   static resolve(paragram) {
@@ -194,3 +192,64 @@ class CXLPromise {
     });
   }
 }
+
+// const promise1 = new CXLPromise((resolve, reject) => {
+//   // resolve('sucess message');
+//   reject('我是错误信息');
+// });
+
+/**
+ * promise1.then((res) => {console.log('res:', res);})
+ * 这个的返回值也是一个promise ----- 等价于下面
+ * new CXLPromise((resolve, reject) => {reject('我是错误信息')});
+ *
+ */
+
+// promise1
+//   .then((res) => {
+//     console.log('res:', res);
+//   })
+//   .catch((err) => {
+//     console.log('catchError:', err);
+//   });
+
+//上面的表达式等价于下面这个 ======>
+// const promise2 = new CXLPromise((resolve, reject) => {
+//   reject('我是错误信息');
+// });
+// promise2.catch((err) => {});
+
+// promise2.then(undefined, (err) => {});
+
+// ----------------------------------------------------------------
+const promise1 = new CXLPromise((resolve, reject) => {
+  reject('我是错误信息');
+});
+
+promise1
+  .then((res) => {
+    console.log('res:', res);
+  })
+  .catch((err) => {
+    console.log('catchError:', err);
+  })
+  .finally(() => {
+    console.log('----执行完成了---');
+  });
+
+// // //分析过程:
+// promise1.then((res) => {
+//   console.log('res:', res);
+// });
+// //的执行结果返回一个新的promise
+// const promiseStep1 = new CXLPromise((resolve, reject) => {
+//   reject('我是错误信息');
+// });
+// //接着promiseStep1执行catch,简化为
+// promiseStep1
+//   .catch((err) => {
+//     console.log('catchError:', err);
+//   })
+//   .finally(() => {
+//     console.log('----执行完成了---');
+//   });

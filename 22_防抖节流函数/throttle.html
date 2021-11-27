@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <button id="cancel" onclick="cancleMethod()">取消</button>
+    <div id="divElement"></div>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/underscore@1.13.1/underscore-umd-min.js"></script> -->
+    <!-- <script src="./07_throttle-v1-基本实现.js"></script> -->
+    <!-- <script src="./08_throttle-v2-leading实现.js"></script> -->
+    <!-- <script src="./09_throttle-v3-trailing实现.js"></script> -->
+    <!-- <script src="./10_throttle-v4-trailing取消功能.js"></script> -->
+    <script src="./11_throttle-v5-trailing返回值.js"></script>
+  </body>
+  <script>
+    /*
+     * 节流的options的参数：(默认开头和结尾都触发)
+     *  leading:true 默认值为true
+     *  trailing:true 默认值为true
+     *
+     *  当事件触发时，会执行这个事件的响应函数；
+     *  如果这个事件会被频繁触发，那么节流函数会按照一定的频率来执行函数；
+     *  不管在这个中间有多少次触发这个事件，执行函数的频繁总是固定的；
+     */
+    let counter = 0;
+    const divElement = document.querySelector("#divElement");
+    function inputChange(event) {
+      let currentCount = ++counter;
+      console.log(`发送了第${currentCount}次网络请求`, this);
+      divElement.innerText = currentCount;
+      return "aaaaaa";
+    }
+
+    //节流处理
+    // window.onmousemove = _.throttle(inputChange, 2000, {
+    //   leading: false,
+    //   trailing: false,
+    // });
+
+    //手写的节流
+    const throttleMethod = throttle(inputChange, 3000, {
+      leading: false,
+      trailing: true,
+      resultCallback: function (res) {
+        console.log("--结果--", res);
+      },
+    });
+    window.onmousemove = throttleMethod;
+    function cancleMethod() {
+      throttleMethod.cancle();
+    }
+  </script>
+
+  <style>
+    div {
+      font-size: 20px;
+      color: black;
+      margin-left: 15px;
+    }
+  </style>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <button id="cancel" onclick="cancleMethod()">取消</button>
+    <div id="divElement"></div>
+    <script src="./myDebounce.js"></script>
+  </body>
+  <script>
+    let counter = 0;
+    const divElement = document.querySelector("#divElement");
+    function inputChange(event) {
+      let currentCount = ++counter;
+      console.log(`发送了第${currentCount}次网络请求`, this);
+      divElement.innerText = currentCount;
+      return "aaaaaa";
+    }
+
+    const debounceMethod = debounce(inputChange, 2000, false);
+    window.onmousemove = debounceMethod;
+    function cancleMethod() {
+      debounceMethod.cancle();
+    }
+  </script>
+</html>

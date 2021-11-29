@@ -1,0 +1,15 @@
+[
+  {
+    "name": "lining",
+    "age": 18,
+    "friends": {
+      "name": "hanmeimei",
+      "age": 20
+    }
+  },
+  100,
+  null,
+  false,
+  true,
+  ["hhh", 20]
+]
